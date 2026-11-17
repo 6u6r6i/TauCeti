@@ -279,14 +279,26 @@ theorem isZero_groupHomology_res_zpowers (k : Type) [CommRing k] {G : Type} [Gro
 
 /-- **Homology of a directed union of infinite cyclic subgroups.** If `G` is the union of a
 directed family of infinite cyclic subgroups, then its group homology with trivial coefficients
-vanishes in degrees `n ≥ 2`. -/
+vanishes in degrees `n ≥ 2`. For an empty family `G` is trivial, and the statement is the vanishing
+of the homology of the free group on no generators. -/
 theorem isZero_groupHomology_of_directed_zpowers (k : Type) [CommRing k] {G : Type} [Group G]
-    {ι : Type*} [Nonempty ι] {g : ι → G} (hg : ∀ i, ¬IsOfFinOrder (g i))
+    {ι : Type*} {g : ι → G} (hg : ∀ i, ¬IsOfFinOrder (g i))
     (hS : Directed (· ≤ ·) fun i ↦ Subgroup.zpowers (g i))
     (hG : ⨆ i, Subgroup.zpowers (g i) = ⊤) {n : ℕ} (hn : 2 ≤ n) :
-    IsZero (groupHomology (Rep.trivial k G k) n) :=
-  groupHomology.isZero_groupHomology_of_directed hS hG fun i ↦
-    isZero_groupHomology_res_zpowers k (hg i) hn
+    IsZero (groupHomology (Rep.trivial k G k) n) := by
+  rcases isEmpty_or_nonempty ι with hι | hι
+  · have hone (x : G) : x = 1 := by
+      have hx : x ∈ (⊤ : Subgroup G) := trivial
+      rw [← hG, iSup_of_empty] at hx
+      exact Subgroup.mem_bot.1 hx
+    have : Unique G := ⟨⟨1⟩, hone⟩
+    let e : FreeGroup Empty ≃* G := MulEquiv.ofUnique
+    refine (isZero_groupHomology_freeGroup Empty k hn).of_iso
+      (groupHomology.mapIso e (LinearEquiv.refl k k) (fun _ ↦ ?_) n).symm
+    ext
+    simp
+  · exact groupHomology.isZero_groupHomology_of_directed hS hG fun i ↦
+      isZero_groupHomology_res_zpowers k (hg i) hn
 
 variable {S}
 
