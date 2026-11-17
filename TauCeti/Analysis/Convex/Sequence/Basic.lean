@@ -702,13 +702,8 @@ theorem unitSlope_add_affine {h : ℕ → WithTop ℝ} {n : ℕ} (hn : n ∈ fin
 
 /-- Scaling the heights by a nonnegative real factor preserves convexity. -/
 theorem IsConvexSeq.map_mul {h : ℕ → WithTop ℝ} (hh : IsConvexSeq h) {c : ℝ} (hc : 0 ≤ c) :
-    IsConvexSeq fun n => (h n).map (c * ·) := by
-  obtain ⟨hD, hmid⟩ := isConvexSeq_iff_two_mul_le.mp hh
-  refine isConvexSeq_iff_two_mul_le.mpr ⟨by simpa only [ne_eq, WithTop.map_eq_top_iff] using hD,
-    fun n hn hn₂ => ?_⟩
-  simp only [ne_eq, WithTop.map_eq_top_iff] at hn hn₂
-  simp only [WithTop.untop₀_map_mul]
-  nlinarith [hmid n hn hn₂]
+    IsConvexSeq fun n => (h n).map (c * ·) :=
+  hh.map (⟨AddMonoidHom.mulLeft c, fun _ _ hxy => mul_le_mul_of_nonneg_left hxy hc⟩ : ℝ →+o ℝ)
 
 /-- Scaling the heights by a nonnegative real factor preserves admissibility. -/
 theorem IsAdmissible.map_mul {a : ℕ → WithTop ℝ} (ha : IsAdmissible a) {c : ℝ} (hc : 0 ≤ c) :
