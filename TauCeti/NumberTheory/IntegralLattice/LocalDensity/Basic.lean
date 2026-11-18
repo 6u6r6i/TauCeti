@@ -702,8 +702,8 @@ theorem isUnit_det_map_padicInt_iff {A : Matrix n n ℤ} :
 
 /-- The reduction modulo an odd prime `p` of a symmetric matrix with unit determinant over `ℤ_p`
 is a nondegenerate symmetric matrix over a field of characteristic different from two. -/
-private theorem isSymm_map_toZMod (hp : p ≠ 2) {A : Matrix n n ℤ_[p]} (hA : Aᵀ = A)
-    (hdet : IsUnit A.det) :
+private theorem isSymm_and_det_ne_zero_and_ringChar_ne_two_map_toZMod (hp : p ≠ 2)
+    {A : Matrix n n ℤ_[p]} (hA : Aᵀ = A) (hdet : IsUnit A.det) :
     (A.map PadicInt.toZMod).IsSymm ∧ (A.map PadicInt.toZMod).det ≠ 0 ∧ ringChar (ZMod p) ≠ 2 := by
   refine ⟨IsSymm.map hA _, ?_, by rwa [ZMod.ringChar_zmod_n]⟩
   rw [← RingHom.mapMatrix_apply, ← RingHom.map_det]
@@ -718,7 +718,8 @@ theorem tendsto_localDensityCount_div_of_card_eq_two_mul_add_one (hp : p ≠ 2)
     Tendsto (fun r => (A.localDensityCount r : ℚ) / (p : ℚ) ^ (r * (Fintype.card n).choose 2))
       atTop (𝓝 (2 * ∏ i ∈ Finset.range m, (1 - ((p : ℚ) ^ (2 * (i + 1)))⁻¹))) := by
   convert tendsto_localDensityCount_div_of_isUnit_det hp hA hdet using 2
-  obtain ⟨hsymm, hdet', hchar⟩ := isSymm_map_toZMod hp hA hdet
+  obtain ⟨hsymm, hdet', hchar⟩ :=
+    isSymm_and_det_ne_zero_and_ringChar_ne_two_map_toZMod hp hA hdet
   have h := hsymm.natCard_isometryMatrices_eq_of_card_eq_two_mul_add_one hchar hdet' hn
   rw [ZMod.card] at h
   have hchoose : (Fintype.card n).choose 2 = m ^ 2 + m * (m + 1) := by
@@ -754,7 +755,8 @@ theorem tendsto_localDensityCount_div_of_card_eq_two_mul_add_two (hp : p ≠ 2)
       atTop (𝓝 (2 * (1 - quadraticChar (ZMod p) ((-1) ^ (m + 1) * (A.map PadicInt.toZMod).det) *
         ((p : ℚ) ^ (m + 1))⁻¹) * ∏ i ∈ Finset.range m, (1 - ((p : ℚ) ^ (2 * (i + 1)))⁻¹))) := by
   convert tendsto_localDensityCount_div_of_isUnit_det hp hA hdet using 2
-  obtain ⟨hsymm, hdet', hchar⟩ := isSymm_map_toZMod hp hA hdet
+  obtain ⟨hsymm, hdet', hchar⟩ :=
+    isSymm_and_det_ne_zero_and_ringChar_ne_two_map_toZMod hp hA hdet
   have h := hsymm.natCard_isometryMatrices_eq_of_card_eq_two_mul_add_two hchar hdet' hn
   rw [ZMod.card] at h
   have hchoose : (Fintype.card n).choose 2 = 2 * (m * (m + 1)) + (m + 1) := by
